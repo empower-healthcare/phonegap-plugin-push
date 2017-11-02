@@ -12,15 +12,10 @@
 #import "PushPlugin.h"
 #import <objc/runtime.h>
 
-static char launchNotificationKey;
-static char coldstartKey;
+NSDictionary  *launchNotification;
+NSNumber  *coldstart;
 
 @implementation AppDelegate (notification)
-
-- (id) getCommandInstance:(NSString*)className
-{
-    return [self.viewController getCommandInstance:className];
-}
 
 // its dangerous to override a method from within a category.
 // Instead we will use method swizzling. we set this up in the load call.
@@ -82,25 +77,23 @@ static char coldstartKey;
         NSDictionary *launchOptions = [notification userInfo];
         if (launchOptions) {
             NSLog(@"coldstart");
-            self.launchNotification = [launchOptions objectForKey: @"UIApplicationLaunchOptionsRemoteNotificationKey"];
-            self.coldstart = [NSNumber numberWithBool:YES];
+            launchNotification = [launchOptions objectForKey: @"UIApplicationLaunchOptionsRemoteNotificationKey"];
+            coldstart = [NSNumber numberWithBool:YES];
         } else {
             NSLog(@"not coldstart");
-            self.coldstart = [NSNumber numberWithBool:NO];
+            coldstart = [NSNumber numberWithBool:NO];
         }
     }
 }
 
-
-
-
+/*
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+    PushPlugin *pushHandler = [self.viewController getCommandInstance:@"PushNotification"];
     [pushHandler didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-    PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+    PushPlugin *pushHandler = [self.viewController getCommandInstance:@"PushNotification"];
     [pushHandler didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
@@ -110,7 +103,7 @@ static char coldstartKey;
 {
     NSLog( @"NotificationCenter Handle push from foreground" );
     // custom code to handle push while app is in the foreground
-    PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+    PushPlugin *pushHandler = [self.viewController getCommandInstance:@"PushNotification"];
     pushHandler.notificationMessage = notification.request.content.userInfo;
     pushHandler.isInline = YES;
     [pushHandler notificationReceived];
@@ -144,7 +137,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
             });
         };
         
-        PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+        PushPlugin *pushHandler = [self.viewController getCommandInstance:@"PushNotification"];
         
         if (pushHandler.handlerObj == nil) {
             pushHandler.handlerObj = [NSMutableDictionary dictionaryWithCapacity:2];
@@ -165,7 +158,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     } else {
         NSLog(@"just put it in the shade");
         //save it for later
-        self.launchNotification = userInfo;
+        launchNotification = userInfo;
         
         completionHandler(UIBackgroundFetchResultNewData);
     }
@@ -183,7 +176,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     // app is in the foreground so call notification callback
     if (application.applicationState == UIApplicationStateActive) {
         NSLog(@"app active");
-        PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+        PushPlugin *pushHandler = [self.viewController getCommandInstance:@"PushNotification"];
         pushHandler.notificationMessage = userInfo;
         pushHandler.isInline = YES;
         [pushHandler notificationReceived];
@@ -212,7 +205,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
                 });
             };
 
-            PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+            PushPlugin *pushHandler = [self.viewController getCommandInstance:@"PushNotification"];
 
             if (pushHandler.handlerObj == nil) {
                 pushHandler.handlerObj = [NSMutableDictionary dictionaryWithCapacity:2];
@@ -233,12 +226,13 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         } else {
             NSLog(@"just put it in the shade");
             //save it for later
-            self.launchNotification = userInfo;
+            launchNotification = userInfo;
 
             completionHandler(UIBackgroundFetchResultNewData);
         }
     }
 }
+*/
 
 - (BOOL)userHasRemoteNotificationsEnabled {
     UIApplication *application = [UIApplication sharedApplication];
@@ -258,7 +252,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
     UIApplication *application = notification.object;
 
-    PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+    PushPlugin *pushHandler = [self.viewController getCommandInstance:@"PushNotification"];
     if (pushHandler.clearBadge) {
         NSLog(@"PushPlugin clearing badge");
         //zero badge
@@ -267,12 +261,12 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         NSLog(@"PushPlugin skip clear badge");
     }
 
-    if (self.launchNotification) {
+    if (launchNotification) {
         pushHandler.isInline = NO;
-        pushHandler.coldstart = [self.coldstart boolValue];
-        pushHandler.notificationMessage = self.launchNotification;
-        self.launchNotification = nil;
-        self.coldstart = [NSNumber numberWithBool:NO];
+        pushHandler.coldstart = [coldstart boolValue];
+        pushHandler.notificationMessage = launchNotification;
+        launchNotification = nil;
+        coldstart = [NSNumber numberWithBool:NO];
         [pushHandler performSelectorOnMainThread:@selector(notificationReceived) withObject:pushHandler waitUntilDone:NO];
     }
 }
@@ -287,7 +281,7 @@ forRemoteNotification: (NSDictionary *) notification completionHandler: (void (^
     NSLog(@"Push Plugin userInfo %@", userInfo);
 
     if (application.applicationState == UIApplicationStateActive) {
-        PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+        PushPlugin *pushHandler = [self.viewController getCommandInstance:@"PushNotification"];
         pushHandler.notificationMessage = userInfo;
         pushHandler.isInline = NO;
         [pushHandler notificationReceived];
@@ -298,7 +292,7 @@ forRemoteNotification: (NSDictionary *) notification completionHandler: (void (^
             });
         };
 
-        PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+        PushPlugin *pushHandler = [self.viewController getCommandInstance:@"PushNotification"];
 
         if (pushHandler.handlerObj == nil) {
             pushHandler.handlerObj = [NSMutableDictionary dictionaryWithCapacity:2];
@@ -320,32 +314,10 @@ forRemoteNotification: (NSDictionary *) notification completionHandler: (void (^
     }
 }
 
-// The accessors use an Associative Reference since you can't define a iVar in a category
-// http://developer.apple.com/library/ios/#documentation/cocoa/conceptual/objectivec/Chapters/ocAssociativeReferences.html
-- (NSMutableArray *)launchNotification
-{
-    return objc_getAssociatedObject(self, &launchNotificationKey);
-}
-
-- (void)setLaunchNotification:(NSDictionary *)aDictionary
-{
-    objc_setAssociatedObject(self, &launchNotificationKey, aDictionary, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSNumber *)coldstart
-{
-    return objc_getAssociatedObject(self, &coldstartKey);
-}
-
-- (void)setColdstart:(NSNumber *)aNumber
-{
-    objc_setAssociatedObject(self, &coldstartKey, aNumber, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
 - (void)dealloc
 {
-    self.launchNotification = nil; // clear the association and release the object
-    self.coldstart = nil;
+    launchNotification = nil; // clear the association and release the object
+    coldstart = nil;
 }
 
 @end
