@@ -32,8 +32,8 @@
       <uses-permission android:name="android.permission.WAKE_LOCK"/>
       <uses-permission android:name="android.permission.VIBRATE"/>
       <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
-      <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE"/>
-      <permission android:name="${applicationId}.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
+      <permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
+      <uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE"/>
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <activity android:name="com.adobe.phonegap.push.PushHandlerActivity" android:exported="true"/>
@@ -41,7 +41,7 @@
       <receiver android:name="com.google.android.gms.gcm.GcmReceiver" android:exported="true" android:permission="com.google.android.c2dm.permission.SEND">
         <intent-filter>
           <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-          <category android:name="${applicationId}"/>
+          <category android:name="$PACKAGE_NAME"/>
         </intent-filter>
       </receiver>
       <service android:name="com.adobe.phonegap.push.GCMIntentService" android:exported="false">
@@ -54,12 +54,11 @@
           <action android:name="com.google.android.gms.iid.InstanceID"/>
         </intent-filter>
       </service>
-      <service android:name="com.adobe.phonegap.push.RegistrationIntentService" android:exported="false"/>
+      <service android:name="com.adobe.phonegap.push.RegistrationIntentService" android:exported="false">
+      </service>
     </config-file>
-    <framework src="push.gradle" custom="true" type="gradleReference"/>
     <framework src="com.android.support:support-v13:23+"/>
-    <framework src="com.google.android.gms:play-services-gcm:9.0.2+"/>
-    <framework src="me.leolin:ShortcutBadger:1.1.4@aar"/>
+    <framework src="com.google.android.gms:play-services-gcm:+"/>
     <source-file src="src/android/com/adobe/phonegap/push/GCMIntentService.java" target-dir="src/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/PushConstants.java" target-dir="src/com/adobe/phonegap/push/"/>
     <source-file src="src/android/com/adobe/phonegap/push/PushHandlerActivity.java" target-dir="src/com/adobe/phonegap/push/"/>
