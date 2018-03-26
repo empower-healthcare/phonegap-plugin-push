@@ -1,7 +1,9 @@
 package com.adobe.phonegap.push;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.os.Build;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +14,11 @@ public class PermissionUtils {
     private static final String CHECK_OP_NO_THROW = "checkOpNoThrow";
 
     public static boolean hasPermission(Context appContext, String appOpsServiceId) throws UnknownError {
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            return notificationManager.areNotificationsEnabled();
+        }
 
         ApplicationInfo appInfo = appContext.getApplicationInfo();
 
