@@ -218,6 +218,18 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
 
     public void createNotification(Context context, Bundle extras) {
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelID = extras.getString(ANDROID_CHANNEL_ID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                channelID, // 通知チャンネルID
+                "Shinsatsuken Notificaiton Channel", // 通知チャンネル名
+                NotificationManager.IMPORTANCE_HIGH // 優先度
+                );
+            channel.setDescription("Shinsatsuken Notificaiton Channel");
+            channel.setLightColor(Color.GREEN);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            mNotificationManager.createNotificationChannel(channel);
+        }
         String appName = getAppName(this);
         String packageName = context.getPackageName();
         Resources resources = context.getResources();
@@ -231,9 +243,14 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
         int requestCode = new Random().nextInt();
         PendingIntent contentIntent = PendingIntent.getActivity(this, requestCode, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setWhen(System.currentTimeMillis())
+        NotificationCompat.Builder mBuilder = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mBuilder = new NotificationCompat.Builder(context, channelID);
+        } else {
+            mBuilder = new NotificationCompat.Builder(context);
+        }
+
+        mBuilder.setWhen(System.currentTimeMillis())
                         .setContentTitle(extras.getString(TITLE))
                         .setTicker(extras.getString(TITLE))
                         .setContentIntent(contentIntent)
