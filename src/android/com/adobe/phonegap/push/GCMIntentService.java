@@ -219,22 +219,28 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
     }
 
     public void createNotification(Context context, Bundle extras) {
+        String appName = getAppName(this);
+        String packageName = context.getPackageName();
+        Resources resources = context.getResources();
+
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelID = "push_channel_1";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int appResId;
+            appResId = resources.getIdentifier("push_channel_id", "string", packageName);
+            String channelID = context.getString(appResId);
+            appResId = resources.getIdentifier("push_channel_description", "string", packageName);
+            String channelDescription = context.getString(appResId);
+
             NotificationChannel channel = new NotificationChannel(
                 channelID, // 通知チャンネルID
-                "Shinsatsuken Push", // 通知チャンネル名
+                channelDescription, // 通知チャンネル名
                 NotificationManager.IMPORTANCE_HIGH // 優先度
                 );
-            channel.setDescription("Shinsatsuken Push");
+            channel.setDescription(channelDescription);
             channel.setLightColor(Color.GREEN);
             channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
             mNotificationManager.createNotificationChannel(channel);
         }
-        String appName = getAppName(this);
-        String packageName = context.getPackageName();
-        Resources resources = context.getResources();
 
         int notId = parseInt(NOT_ID, extras);
         Intent notificationIntent = new Intent(this, PushHandlerActivity.class);

@@ -18,6 +18,8 @@
   </engines>
   <preference name="SENDER_ID"/>
   <platform name="android">
+    <preference name="CHANNEL_ID"/>
+    <preference name="CHANNEL_DESCRIPTION"/>
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="PushNotification">
         <param name="android-package" value="com.adobe.phonegap.push.PushPlugin"/>
@@ -25,6 +27,8 @@
     </config-file>
     <config-file target="res/values/strings.xml" parent="/resources">
       <string name="google_app_id">$SENDER_ID</string>
+      <string name="push_channel_id">$CHANNEL_ID</string>
+      <string name="push_channel_description">$CHANNEL_DESCRIPTION</string>
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest">
       <uses-permission android:name="android.permission.INTERNET"/>
