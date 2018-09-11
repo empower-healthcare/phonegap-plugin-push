@@ -219,6 +219,8 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
     }
 
     public void createNotification(Context context, Bundle extras) {
+        String channelID = "";
+
         String appName = getAppName(this);
         String packageName = context.getPackageName();
         Resources resources = context.getResources();
@@ -227,7 +229,7 @@ public class GCMIntentService extends GcmListenerService implements PushConstant
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int appResId;
             appResId = resources.getIdentifier("push_channel_id", "string", packageName);
-            String channelID = context.getString(appResId);
+            channelID = context.getString(appResId);
             appResId = resources.getIdentifier("push_channel_description", "string", packageName);
             String channelDescription = context.getString(appResId);
 
