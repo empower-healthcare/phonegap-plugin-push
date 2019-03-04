@@ -16,8 +16,10 @@
     <engine name="cordova-android" version=">=4.0.0"/>
     <engine name="cordova-ios" version=">=4.1.0"/>
   </engines>
-  <preference name="SENDER_ID"/>
   <platform name="android">
+<!--
+    <preference name="GOOGLE_APP_ID"/>
+-->
     <preference name="CHANNEL_ID"/>
     <preference name="CHANNEL_DESCRIPTION"/>
     <config-file target="res/xml/config.xml" parent="/*">
@@ -26,7 +28,9 @@
       </feature>
     </config-file>
     <config-file target="res/values/strings.xml" parent="/resources">
-      <string name="google_app_id">$SENDER_ID</string>
+<!--
+      <string name="google_app_id">$GOOGLE_APP_ID</string>
+-->
       <string name="push_channel_id">$CHANNEL_ID</string>
       <string name="push_channel_description">$CHANNEL_DESCRIPTION</string>
     </config-file>
@@ -80,6 +84,7 @@
     <asset src="src/browser/manifest.json" target="manifest.json"/>
   </platform>
   <platform name="ios">
+    <preference name="SENDER_ID"/>
     <config-file target="config.xml" parent="/*">
       <feature name="PushNotification">
         <param name="ios-package" value="PushPlugin"/>
