@@ -19,7 +19,4 @@ extern NSString *const pushPluginApplicationDidBecomeActiveNotification;
 - (void)checkUserHasRemoteNotificationsEnabledWithCompletionHandler:(nonnull void (^)(BOOL))completionHandler;
 //- (id) getCommandInstance:(NSString*)className;
 
-@property (nonatomic, retain) NSDictionary  *launchNotification;
-@property (nonatomic, retain) NSNumber  *coldstart;
-
 @end

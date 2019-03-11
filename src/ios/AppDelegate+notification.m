@@ -10,6 +10,9 @@
 #import "PushPlugin.h"
 #import <objc/runtime.h>
 
+NSDictionary  *launchNotification;
+NSNumber  *coldstart;
+
 static char launchNotificationKey;
 static char coldstartKey;
 NSString *const pushPluginApplicationDidBecomeActiveNotification = @"pushPluginApplicationDidBecomeActiveNotification";
@@ -132,7 +135,7 @@ NSString *const pushPluginApplicationDidBecomeActiveNotification = @"pushPluginA
         } else {
             NSLog(@"just put it in the shade");
             //save it for later
-            self.launchNotification = userInfo;
+            launchNotification = userInfo;
             completionHandler(UIBackgroundFetchResultNewData);
         }
 
@@ -182,12 +185,12 @@ NSString *const pushPluginApplicationDidBecomeActiveNotification = @"pushPluginA
         NSLog(@"PushPlugin skip clear badge");
     }
 
-    if (self.launchNotification) {
+    if (launchNotification) {
         pushHandler.isInline = NO;
-        pushHandler.coldstart = [self.coldstart boolValue];
-        pushHandler.notificationMessage = self.launchNotification;
-        self.launchNotification = nil;
-        self.coldstart = [NSNumber numberWithBool:NO];
+        pushHandler.coldstart = [coldstart boolValue];
+        pushHandler.notificationMessage = launchNotification;
+        launchNotification = nil;
+        coldstart = [NSNumber numberWithBool:NO];
         [pushHandler performSelectorOnMainThread:@selector(notificationReceived) withObject:pushHandler waitUntilDone:NO];
     }
 
@@ -234,8 +237,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         case UIApplicationStateInactive:
         {
             NSLog(@"coldstart");
-            self.launchNotification = response.notification.request.content.userInfo;
-            self.coldstart = [NSNumber numberWithBool:YES];
+            launchNotification = response.notification.request.content.userInfo;
+            coldstart = [NSNumber numberWithBool:YES];
             break;
         }
         case UIApplicationStateBackground:
@@ -294,8 +297,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 - (void)dealloc
 {
-    self.launchNotification = nil; // clear the association and release the object
-    self.coldstart = nil;
+    launchNotification = nil; // clear the association and release the object
+    coldstart = nil;
 }
 
 @end
