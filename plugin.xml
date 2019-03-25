@@ -12,6 +12,9 @@
     <engine name="cordova-ios" version=">=4.5.0"/>
   </engines>
   <platform name="android">
+    <preference name="SENDER_ID"/>
+    <preference name="CHANNEL_ID"/>
+    <preference name="CHANNEL_DESCRIPTION"/>
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="PushNotification">
         <param name="android-package" value="com.adobe.phonegap.push.PushPlugin"/>
@@ -67,6 +70,7 @@
     <hook type="after_prepare" src="hooks/browser/updateManifest.js"/>
   </platform>
   <platform name="ios">
+    <preference name="SENDER_ID"/>
     <config-file target="config.xml" parent="/*">
       <feature name="PushNotification">
         <param name="ios-package" value="PushPlugin"/>

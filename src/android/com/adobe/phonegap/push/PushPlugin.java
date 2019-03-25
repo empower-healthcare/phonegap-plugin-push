@@ -92,6 +92,8 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
       final NotificationManager notificationManager = (NotificationManager) cordova.getActivity()
           .getSystemService(Context.NOTIFICATION_SERVICE);
 
+      String packageName = getApplicationContext().getPackageName();
+
       String channelID = getStringResourceByName("push_channel_id");
       String channelDescription = getStringResourceByName("push_channel_description");
       NotificationChannel mChannel = new NotificationChannel(
