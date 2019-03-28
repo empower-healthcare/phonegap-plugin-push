@@ -13,6 +13,9 @@
   </engines>
   <platform name="android">
     <preference name="SENDER_ID"/>
+    <preference name="APP_ID"/>
+    <preference name="API_KEY"/>
+    <preference name="DATABASE_URL"/>
     <preference name="CHANNEL_ID"/>
     <preference name="CHANNEL_DESCRIPTION"/>
     <config-file target="res/xml/config.xml" parent="/*">
@@ -22,6 +25,9 @@
     </config-file>
     <config-file target="res/values/strings.xml" parent="/resources">
       <string name="push_sender_id">$SENDER_ID</string>
+      <string name="push_app_id">$APP_ID</string>
+      <string name="push_api_key">$API_KEY</string>
+      <string name="push_database_url">$DATABASE_URL</string>
       <string name="push_channel_id">$CHANNEL_ID</string>
       <string name="push_channel_description">$CHANNEL_DESCRIPTION</string>
     </config-file>

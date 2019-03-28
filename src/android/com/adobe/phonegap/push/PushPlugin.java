@@ -16,6 +16,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -177,6 +179,14 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
     Log.v(LOG_TAG, "execute: action=" + action);
     gWebView = this.webView;
 
+    FirebaseOptions options = new FirebaseOptions.Builder()
+      .setApplicationId(getStringResourceByName("push_app_id"))
+      .setApiKey(getStringResourceByName("push_api_key"))
+      .setDatabaseUrl(getStringResourceByName("push_database_url"))
+      .build();
+    FirebaseApp.initializeApp(getApplicationContext(), options, "firebaseapp_push");
+    FirebaseApp firebaseAppPush = FirebaseApp.getInstance("firebaseapp_push");
+
     if (INITIALIZE.equals(action)) {
       cordova.getThreadPool().execute(new Runnable() {
         public void run() {
@@ -203,14 +213,14 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             Log.v(LOG_TAG, "execute: senderID=" + senderID);
 
             try {
-              token = FirebaseInstanceId.getInstance().getToken();
+              token = FirebaseInstanceId.getInstance(firebaseAppPush).getToken();
             } catch (IllegalStateException e) {
               Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
             }
 
             if (token == null) {
               try {
-                token = FirebaseInstanceId.getInstance().getToken(senderID, FCM);
+                token = FirebaseInstanceId.getInstance(firebaseAppPush).getToken(senderID, FCM);
               } catch (IllegalStateException e) {
                 Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
               }
@@ -294,7 +304,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             if (topics != null && !"".equals(registration_id)) {
               unsubscribeFromTopics(topics, registration_id);
             } else {
-              FirebaseInstanceId.getInstance().deleteInstanceId();
+              FirebaseInstanceId.getInstance(firebaseAppPush).deleteInstanceId();
               Log.v(LOG_TAG, "UNREGISTER");
 
               // Remove shared prefs
