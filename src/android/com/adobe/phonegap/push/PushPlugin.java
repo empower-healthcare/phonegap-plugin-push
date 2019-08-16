@@ -179,15 +179,14 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
     Log.v(LOG_TAG, "execute: action=" + action);
     gWebView = this.webView;
 
-    FirebaseOptions options = new FirebaseOptions.Builder()
-      .setApplicationId(getStringResourceByName("push_app_id"))
-      .setApiKey(getStringResourceByName("push_api_key"))
-      .setDatabaseUrl(getStringResourceByName("push_database_url"))
-      .build();
-    FirebaseApp.initializeApp(getApplicationContext(), options, "firebaseapp_push");
-    FirebaseApp firebaseAppPush = FirebaseApp.getInstance("firebaseapp_push");
-
     if (INITIALIZE.equals(action)) {
+      FirebaseOptions options = new FirebaseOptions.Builder()
+              .setApplicationId(getStringResourceByName("push_app_id"))
+              .setApiKey(getStringResourceByName("push_api_key"))
+              .setDatabaseUrl(getStringResourceByName("push_database_url"))
+              .build();
+      FirebaseApp.initializeApp(getApplicationContext(), options, "firebaseapp_push");
+
       cordova.getThreadPool().execute(new Runnable() {
         public void run() {
           pushContext = callbackContext;
@@ -213,14 +212,14 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             Log.v(LOG_TAG, "execute: senderID=" + senderID);
 
             try {
-              token = FirebaseInstanceId.getInstance(firebaseAppPush).getToken();
+              token = FirebaseInstanceId.getInstance(FirebaseApp.getInstance("firebaseapp_push")).getToken();
             } catch (IllegalStateException e) {
               Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
             }
 
             if (token == null) {
               try {
-                token = FirebaseInstanceId.getInstance(firebaseAppPush).getToken(senderID, FCM);
+                token = FirebaseInstanceId.getInstance(FirebaseApp.getInstance("firebaseapp_push")).getToken(senderID, FCM);
               } catch (IllegalStateException e) {
                 Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
               }
@@ -304,7 +303,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             if (topics != null && !"".equals(registration_id)) {
               unsubscribeFromTopics(topics, registration_id);
             } else {
-              FirebaseInstanceId.getInstance(firebaseAppPush).deleteInstanceId();
+              FirebaseInstanceId.getInstance(FirebaseApp.getInstance("firebaseapp_push")).deleteInstanceId();
               Log.v(LOG_TAG, "UNREGISTER");
 
               // Remove shared prefs
