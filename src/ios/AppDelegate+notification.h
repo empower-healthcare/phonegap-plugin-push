@@ -7,16 +7,15 @@
 //
 
 #import "AppDelegate.h"
-@import UserNotifications;
-
-extern NSString *const pushPluginApplicationDidBecomeActiveNotification;
+#import <UserNotifications/UserNotifications.h>
 
 @interface AppDelegate (notification) <UNUserNotificationCenterDelegate>
 //- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 //- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 //- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:( void (^)(UIBackgroundFetchResult))completionHandler;
+
+
 - (void)pushPluginOnApplicationDidBecomeActive:(UIApplication *)application;
-- (void)checkUserHasRemoteNotificationsEnabledWithCompletionHandler:(nonnull void (^)(BOOL))completionHandler;
-//- (id) getCommandInstance:(NSString*)className;
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void(^)())completionHandler;
 
 @end
